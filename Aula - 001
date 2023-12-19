@@ -1,0 +1,18 @@
+from tkinter import *
+
+root = Tk() # inicializa o tkinter
+
+class Application(): # inicializa a classe da aplicacao
+    def __init__(self): # inicia os objetos da classe
+        self.root = root # cria uma equivalencia entre o objeto e a raiz da funcao
+        self.tela() # chama o método tela como um objeto
+        root.mainloop() # chama o método loop para rodar o tkinter
+    def tela(self): # método de configuracao de tela
+        self.root.title("Cadastro de Clientes") # altera o titulo da tela
+        self.root.configure(background = '#D3D3D3') # insere a cor de fundo
+        self.root.geometry('800x600') # insere o tamanho default da tela
+        self.root.resizable(True, True) # insere a responsabilidade da tela, tanto vertical, quanto horizontal
+        self.root.maxsize(width=800, height=600) # insere o tamanho maximo da tela
+        self.root.minsize(width=800, height=600) # insere o tamanho minimo da tela
+
+Application()
