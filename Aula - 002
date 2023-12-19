@@ -1,0 +1,44 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+from tkinter import *
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+root = Tk() # inicializa o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+class Application():    # inicializa a classe da aplicacao
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def __init__(self): # inicia os objetos da classe
+
+        self.root = root      # cria uma equivalencia entre o objeto e a raiz da funcao
+        self.tela()           # chama o método tela como um objeto
+        self.frames_de_tela() # chama o método para configurar as posicoes e tamanhos das telas
+        root.mainloop()       # chama o método loop para rodar o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def tela(self): # método de configuracao de tela
+
+        self.root.title("Cadastro de Clientes")      # altera o titulo da tela
+        self.root.configure(background = 'black')    # insere a cor de fundo
+        self.root.geometry('800x600')                # insere o tamanho default da tela
+        self.root.resizable(True, True)              # insere a responsabilidade da tela, tanto vertical, quanto horizontal
+        self.root.maxsize(width = 800, height = 600) # insere o tamanho maximo da tela
+        self.root.minsize(width = 800, height = 600) # insere o tamanho minimo da tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def frames_de_tela(self): # método para organizar a posicao das telas
+
+        self.frame_1 = Frame(self.root, bd = 4, bg = 'grey', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_1.place(relx = 0.02, rely = 0.02, relwidth = 0.96, relheight = 0.46)                               # define o tamanho e a posicao do frame na tela
+        self.frame_2 = Frame(self.root, bd = 4, bg = 'grey', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_2.place(relx = 0.02, rely = 0.5, relwidth = 0.96, relheight = 0.46)                                # define o tamanho e a posicao do frame na tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Application() # invoca a classe
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
