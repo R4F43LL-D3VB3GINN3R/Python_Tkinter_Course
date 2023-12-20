@@ -1,0 +1,85 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+from tkinter import *
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+root = Tk() # inicializa o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+class Application():    # inicializa a classe da aplicacao
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def __init__(self): # inicia os objetos da classe
+
+        self.root = root      # cria uma equivalencia entre o objeto e a raiz da funcao
+        self.tela()           # chama o método tela como um objeto
+        self.frames_de_tela() # chama o método para configurar as posicoes e tamanhos das telas
+        self.widgets_frame1() # chama o método para criacao de botoes
+        root.mainloop()       # chama o método loop para rodar o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def tela(self): # método de configuracao de tela
+
+        self.root.title("Cadastro de Clientes")      # altera o titulo da tela
+        self.root.configure(background = 'black')    # insere a cor de fundo
+        self.root.geometry('800x600')                # insere o tamanho default da tela
+        self.root.resizable(True, True)              # insere a responsabilidade da tela, tanto vertical, quanto horizontal
+        self.root.maxsize(width = 800, height = 600) # insere o tamanho maximo da tela
+        self.root.minsize(width = 800, height = 600) # insere o tamanho minimo da tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def frames_de_tela(self): # método para organizar a posicao das telas
+
+        self.frame_1 = Frame(self.root, bd = 4, bg = 'grey', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_1.place(relx = 0.02, rely = 0.02, relwidth = 0.96, relheight = 0.46)                               # define o tamanho e a posicao do frame na tela
+        self.frame_2 = Frame(self.root, bd = 4, bg = 'grey', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_2.place(relx = 0.02, rely = 0.5, relwidth = 0.96, relheight = 0.46)                                # define o tamanho e a posicao do frame na tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def widgets_frame1(self): # método para criacao de botoes
+
+        # Botoes
+        self.bt_limpar = Button(self.frame_1, text = 'Limpar')                          # objeto botão criado na tela1
+        self.bt_limpar.place(relx = 0.2, rely = 0.1, relwidth = 0.1, relheight = 0.15)  # insere o botao com posicao e tamanho desejado.
+        self.bt_buscar = Button(self.frame_1, text = 'Buscar')                          # objeto botão criado na tela1
+        self.bt_buscar.place(relx = 0.3, rely = 0.1, relwidth = 0.1, relheight = 0.15)  # insere o botao com posicao e tamanho desejado.
+        self.bt_novo = Button(self.frame_1, text = 'Novo')                              # objeto botão criado na tela1
+        self.bt_novo.place(relx = 0.6, rely = 0.1, relwidth = 0.1, relheight = 0.15)    # insere o botao com posicao e tamanho desejado.
+        self.bt_alterar = Button(self.frame_1, text = 'Alterar')                        # objeto botão criado na tela1
+        self.bt_alterar.place(relx = 0.7, rely = 0.1, relwidth = 0.1, relheight = 0.15) # insere o botao com posicao e tamanho desejado.
+        self.bt_apagar = Button(self.frame_1, text = 'Apagar')                          # objeto botão criado na tela1
+        self.bt_apagar.place(relx = 0.8, rely = 0.1, relwidth = 0.1, relheight = 0.15)  # insere o botao com posicao e tamanho desejado.
+
+        #--------------------------------------
+
+        # Labels
+        self.lb_codigo = Label(self.frame_1, text = 'Código')     # objeto label criado na tela1
+        self.lb_codigo.place(relx = 0.05, rely = 0.06)            # insere a label com posicao e tamanho desejado
+        self.lb_nome = Label(self.frame_1, text = 'Nome')         # objeto label criado na tela1
+        self.lb_nome.place(relx = 0.05, rely = 0.35)              # insere a label com posicao e tamanho desejado
+        self.lb_telefone = Label(self.frame_1, text = 'Telefone') # objeto label criado na tela1
+        self.lb_telefone.place(relx = 0.05, rely = 0.64)          # insere a label com posicao e tamanho desejado
+        self.lb_cidade = Label(self.frame_1, text = 'Cidade')     # objeto label criado na tela1
+        self.lb_cidade.place(relx = 0.18, rely = 0.64)            # insere a label com posicao e tamanho desejado
+
+        #--------------------------------------
+
+        # Entradas
+        self.codigo_entry = Entry(self.frame_1)                             # objeto entrada criado na tela1
+        self.codigo_entry.place(relx = 0.05, rely = 0.18, relwidth = 0.06)  # insere a entrada com posicao e tamanho desejado
+        self.nome_entry = Entry(self.frame_1)                               # objeto entrada criado na tela1
+        self.nome_entry.place(relx = 0.05, rely = 0.47, relwidth = 0.8)     # insere a entrada com posicao e tamanho desejado
+        self.telefone_entry = Entry(self.frame_1)                           # objeto entrada criado na tela1
+        self.telefone_entry.place(relx = 0.05, rely = 0.76, relwidth = 0.1) # insere a entrada com posicao e tamanho desejado
+        self.cidade_entry = Entry(self.frame_1)                             # objeto entrada criado na tela1
+        self.cidade_entry.place(relx = 0.18, rely = 0.76, relwidth = 0.2)   # insere a entrada com posicao e tamanho desejado
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Application() # invoca a classe
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
