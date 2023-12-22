@@ -1,0 +1,269 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+from tkinter import *   # importa a biblioteca tkinter
+from tkinter import ttk # importa mais funcionalidades do tkinter
+import sqlite3          # import a biblioteca sqlite3
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+root = Tk() # inicializa o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+class Funcs(): # inicializa a classe de funcoes
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def limpa_cliente(self): # funcao para limpar as entradas
+
+        self.codigo_entry.delete(0, END)   # limpa a entrada do objeto
+        self.nome_entry.delete(0, END)     # limpa a entrada do objeto
+        self.telefone_entry.delete(0, END) # limpa a entrada do objeto
+        self.cidade_entry.delete(0, END)   # limpa a entrada do objeto
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def conecta_bd(self): # método para conectar ao banco de dados
+
+        self.conn = sqlite3.connect('clientes.bd') # objeto de conexao com o banco de dados de nome clientes
+        self.cursor = self.conn.cursor()           # objeto de cursor para executar comando SQL
+        print('Query Aceita...')   # string de verificacao
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def desconecta_bd(self): # método para desconectar o banco de dados
+
+        self.conn.close() # objeto de encerramento de conexao
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def montaTabelas(self): # método de manipulacao e criacao de tabelas
+
+        self.conecta_bd()                                   # chama o método de conexao com o banco de dados
+        print('Bem-Vindo(a) ao Banco de Dados: [CLIENTES]') # print de verificacao de entrada ao banco de dados
+
+        # Tabelas
+        self.cursor.execute("""                       
+            CREATE TABLE IF NOT EXISTS tab_clientes (
+                cod INTEGER PRIMARY KEY,
+                nome_cliente CHAR(40) NOT NULL,
+                telefone INTEGER(20),
+                cidade char(40)                       
+            );
+        """)
+
+        # self.cursor.execute executa um comando SQL
+        # a coluna cod já recebe auto increment automaticamente
+
+        self.conn.commit();  # insere o comando SQL
+        self.desconecta_bd() # chama o método para encerrar a conexao
+
+        #--------------------------------------
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def variaveis(self): # método para guardar variaveis
+
+        self.codigo = self.codigo_entry.get()     # objeto criado recebe o que for digitado na entrada
+        self.nome = self.nome_entry.get()         # objeto criado recebe o que for digitado na entrada
+        self.telefone = self.telefone_entry.get() # objeto criado recebe o que for digitado na entrada
+        self.cidade = self.cidade_entry.get()     # objeto criado recebe o que for digitado na entrada
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def add_cliente(self): # método para guardas os dados de um cliente
+
+        self.variaveis()  # chama o método para guardar as variaveis
+        self.conecta_bd() # chama o método para conectar ao bando de dados
+
+        self.cursor.execute(""" INSERT INTO tab_clientes (nome_cliente, telefone, cidade)
+            VALUES (?, ?, ?)""", (self.nome, self.telefone, self.cidade) # query sql para inserir os dados do cliente na tabela
+        )
+        
+        self.conn.commit()   # insere o comando SQL
+        self.desconecta_bd() # chama o método para encerrar a conexao
+        self.select_lista()  # método para atualizar a lista após a insercao dos dados
+        self.limpa_cliente() # método para limapar as entradas
+ 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def select_lista(self): # método para acessar os dados de um cliente
+
+        self.listaCli.delete(*self.listaCli.get_children()) # o objeto deleta os elementos desempacotados da lista por getchildren
+
+        self.conecta_bd() # chama o método para conectar ao bando de dados
+
+        lista = self.cursor.execute("""SELECT cod, nome_cliente, telefone, cidade FROM tab_clientes
+        ORDER BY nome_cliente ASC; """) # seleciona todos os campos da tabela na lista e os ordena pelos nomes dos clientes em ordem alfabetica
+
+        for i in lista:                             # percorre todos os itens da lista que guarda os resultados da consulta ao banco de dados 
+            self.listaCli.insert("", END, values=i) # os itens serão inseridos a lista do topo ao final
+
+        self.desconecta_bd() # chama o método para encerrar a conexao
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def duplo_clique(self, event): # método para selecionar um item da treeview e event é passado obrigatoriamente para interagir com o botao
+
+        self.limpa_cliente()      # chama o método para limpar os campos de entrada
+        self.listaCli.selection() # seleciona o item de uma lista com suas informacoes
+
+        for n in self.listaCli.selection():                          # ciclo para poder extrair os dados do item selecionado
+            col1, col2, col3, col4 = self.listaCli.item(n, 'values') # extrai os dados para a memoria
+            self.codigo_entry.insert(END, col1)                      # da memória preenchemos a entrada
+            self.nome_entry.insert(END, col2)                        # da memória preenchemos a entrada
+            self.telefone_entry.insert(END, col3)                    # da memória preenchemos a entrada
+            self.cidade_entry.insert(END, col4)                      # da memória preenchemos a entrada
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+            
+    def deleta_cliente(self): # método para deletar um cliente
+
+        self.variaveis()                                                                  # chama o método para guardar as variaveis
+        self.conecta_bd()                                                                 # chama o método para conectar ao bando de dados
+        self.cursor.execute("""DELETE FROM tab_clientes WHERE cod = ?""", (self.codigo,)) # deleta o cliente conforme o código fornecido
+        self.conn.commit()                                                                # insere o comando SQL
+        self.desconecta_bd()                                                              # chama o método para encerrar a conexao
+        self.limpa_cliente()                                                              # chama o método para limpar os campos de entrada
+        self.select_lista()                                                               # chamamétodo para acessar os dados de um cliente
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def altera_cliente(self): # método para alterar dados de clientes
+
+        self.variaveis()                                                                            # chama o método para guardar as variaveis
+        self.conecta_bd()                                                                           # chama o método para conectar ao bando de dados
+        self.cursor.execute("""UPDATE tab_clientes SET nome_cliente = ?, telefone = ?, cidade = ?
+                            WHERE cod = ?""", (self.nome, self.telefone, self.cidade, self.codigo)) # altera os dados da tabela conforme o id oferecido
+        self.conn.commit()                                                                          # insere o comando SQL
+        self.desconecta_bd()                                                                        # chama o método para encerrar a conexao
+        self.limpa_cliente()                                                                        # chama o método para limpar os campos de entrada
+        self.select_lista()                                                                         # chamamétodo para acessar os dados de um cliente
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------# 
+class Application(Funcs):    # inicializa a classe da aplicacao com permissao para usar as funcoes de Funcs
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def __init__(self): # inicia os objetos da classe
+
+        self.root = root      # cria uma equivalencia entre o objeto e a raiz da funcao
+        self.tela()           # chama o método tela como um objeto
+        self.frames_de_tela() # chama o método para configurar as posicoes e tamanhos das telas
+        self.widgets_frame1() # chama o método para criacao de botoes
+        self.lista_frame2()   # chama o método para a criacao da lista
+        self.montaTabelas()   # chama o método para criacao de tabelas no sqlite
+        self.select_lista()   # chama o método para acessar os dados de um cliente
+        self.menus()          # chama o método de criacao de barras de menus
+        root.mainloop()       # chama o método loop para rodar o tkinter
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def tela(self): # método de configuracao de tela
+
+        self.root.title("Cadastro de Clientes")      # altera o titulo da tela
+        self.root.configure(background = 'white')    # insere a cor de fundo
+        self.root.geometry('800x600')                # insere o tamanho default da tela
+        self.root.resizable(True, True)              # insere a responsabilidade da tela, tanto vertical, quanto horizontal
+        self.root.maxsize(width = 800, height = 600) # insere o tamanho maximo da tela
+        self.root.minsize(width = 800, height = 600) # insere o tamanho minimo da tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    def frames_de_tela(self): # método para organizar a posicao das telas
+
+        self.frame_1 = Frame(self.root, bd = 4, bg = 'lightblue', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_1.place(relx = 0.02, rely = 0.02, relwidth = 0.96, relheight = 0.46)                                    # define o tamanho e a posicao do frame na tela
+        self.frame_2 = Frame(self.root, bd = 4, bg = 'lightblue', highlightbackground = '#333333', highlightthickness = 3) # objeto do primeiro frame com borda, cor de fundo, cor da borda e espessura da borda
+        self.frame_2.place(relx = 0.02, rely = 0.5, relwidth = 0.96, relheight = 0.46)                                     # define o tamanho e a posicao do frame na tela
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def widgets_frame1(self): # método para criacao de botoes
+
+        # Botoes 
+        self.bt_limpar = Button(self.frame_1, text = 'Limpar', bd = 4, bg = 'white', font=('comic-sans', 8, 'bold', 'italic'), command = self.limpa_cliente)    # objeto botão criado na tela1
+        self.bt_limpar.place(relx = 0.33, rely = 0.86, relwidth = 0.1, relheight = 0.10)                                                                        # insere o botao com posicao e tamanho desejado.
+        self.bt_buscar = Button(self.frame_1, text = 'Buscar', bd = 4, bg = 'white', font=('comic-sans', 8, 'bold', 'italic'))                                  # objeto botão criado na tela1
+        self.bt_buscar.place(relx = 0.46, rely = 0.86, relwidth = 0.1, relheight = 0.10)                                                                        # insere o botao com posicao e tamanho desejado.
+        self.bt_novo = Button(self.frame_1, text = 'Novo', bd = 4, bg = 'white', font=('comic-sans', 8, 'bold', 'italic'), command = self.add_cliente)          # objeto botão criado na tela1
+        self.bt_novo.place(relx = 0.59, rely = 0.86, relwidth = 0.1, relheight = 0.10)                                                                          # insere o botao com posicao e tamanho desejado.
+        self.bt_alterar = Button(self.frame_1, text = 'Alterar', bd = 4, bg = 'white', font=('comic-sans', 8, 'bold', 'italic'), command = self.altera_cliente) # objeto botão criado na tela1
+        self.bt_alterar.place(relx = 0.72, rely = 0.86, relwidth = 0.1, relheight = 0.10)                                                                       # insere o botao com posicao e tamanho desejado.
+        self.bt_apagar = Button(self.frame_1, text = 'Apagar', bd = 4, bg = 'white', font=('comic-sans', 8, 'bold', 'italic'), command = self.deleta_cliente)   # objeto botão criado na tela1
+        self.bt_apagar.place(relx = 0.85, rely = 0.86, relwidth = 0.1, relheight = 0.10)                                                                        # insere o botao com posicao e tamanho desejado.
+
+        #--------------------------------------
+
+        # Labels
+        self.lb_codigo = Label(self.frame_1, text = 'Código', bg='lightblue', font=('comic-sans', 10, 'bold', 'italic'))     # objeto label criado na tela1
+        self.lb_codigo.place(relx = 0.05, rely = 0.05)                                                                       # insere a label com posicao e tamanho desejado
+        self.lb_nome = Label(self.frame_1, text = 'Nome', bg='lightblue', font=('comic-sans', 10, 'bold', 'italic'))         # objeto label criado na tela1
+        self.lb_nome.place(relx = 0.05, rely = 0.28)                                                                         # insere a label com posicao e tamanho desejado
+        self.lb_telefone = Label(self.frame_1, text = 'Telefone', bg='lightblue', font=('comic-sans', 10, 'bold', 'italic')) # objeto label criado na tela1
+        self.lb_telefone.place(relx = 0.05, rely = 0.51)                                                                     # insere a label com posicao e tamanho desejado
+        self.lb_cidade = Label(self.frame_1, text = 'Cidade', bg='lightblue', font=('comic-sans', 10, 'bold', 'italic'))     # objeto label criado na tela1
+        self.lb_cidade.place(relx = 0.05, rely = 0.74)                                                                       # insere a label com posicao e tamanho desejado
+
+        #--------------------------------------
+
+        # Entradas
+        self.codigo_entry = Entry(self.frame_1, bd=4)                       # objeto entrada criado na tela1
+        self.codigo_entry.place(relx = 0.05, rely = 0.16, relwidth = 0.06)  # insere a entrada com posicao e tamanho desejado
+        self.nome_entry = Entry(self.frame_1, bd=4)                         # objeto entrada criado na tela1
+        self.nome_entry.place(relx = 0.05, rely = 0.40, relwidth = 0.8)     # insere a entrada com posicao e tamanho desejado
+        self.telefone_entry = Entry(self.frame_1, bd=4)                     # objeto entrada criado na tela1
+        self.telefone_entry.place(relx = 0.05, rely = 0.63, relwidth = 0.1) # insere a entrada com posicao e tamanho desejado
+        self.cidade_entry = Entry(self.frame_1, bd=4)                       # objeto entrada criado na tela1
+        self.cidade_entry.place(relx = 0.05, rely = 0.86, relwidth = 0.2)   # insere a entrada com posicao e tamanho desejado
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def lista_frame2(self):
+
+        self.listaCli = ttk.Treeview(self.frame_2, height = 3, column = ("col1", "col2'", "col3", "col4")) # objeto treeview criado na tela2
+
+        # Cabecalhos
+        self.listaCli.heading("#0", text="")         # texto de cabecalho
+        self.listaCli.heading("#1", text="Codigo")   # texto de cabecalho
+        self.listaCli.heading("#2", text="Nome")     # texto de cabecalho
+        self.listaCli.heading("#3", text="Telefone") # texto de cabecalho
+        self.listaCli.heading("#4", text="Cidade")   # texto de cabecalho
+
+        #--------------------------------------
+
+        # Colunas
+        self.listaCli.column("#0", width=1)   # tamanho da coluna
+        self.listaCli.column("#1", width=50)  # tamanho da coluna
+        self.listaCli.column("#2", width=200) # tamanho da coluna
+        self.listaCli.column("#3", width=125) # tamanho da coluna
+        self.listaCli.column("#4", width=125) # tamanho da coluna
+
+        #--------------------------------------
+
+        # Treeview
+        self.listaCli.place(relx = 0.01, rely = 0.05, relwidth = 0.95, relheight = 0.85) # insere a treeview com posicao e tamanho desejado
+        vsb = ttk.Scrollbar(self.frame_2, orient="vertical", command=self.listaCli.yview) # objeto barra de rolagem criado na tela2
+        vsb.place(relx = 0.96, rely = 0.05, relheight = 0.85)                             # insere a barra de rolagem com posicao e tamanho desejado
+        self.listaCli.configure(yscrollcommand=vsb.set)                                   # configuracao da barra de rolagem
+        self.listaCli.bind("<Double-1>", self.duplo_clique)                               # ao interagir com a lista ela executa a funcao passada ao clicar duas vezes.
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+        
+    def menus(self): # método para criacao de menus
+
+        menubar = Menu(self.root)      # variavel recebe o menu
+        self.root.config(menu=menubar) # objeto recebe a barra de menus
+        filemenu = Menu(menubar)       # cria opcao de menu
+        filemenu2 = Menu(menubar)      # cria opcao de menu
+
+        def Quit(): self.root.destroy() # chama a funcao de saída do programa
+
+        menubar.add_cascade(label=  "Opcoes", menu =  filemenu) # dentro da barra de menu cria a opcao
+        menubar.add_cascade(label = "Limpar", menu =  filemenu2) # dentro da barra de menu cria a opcao
+
+        filemenu.add_command(label = "Sair", command = Quit)                          # chama a funcao de saída de dentro da barra de menu
+        filemenu2.add_command(label = "Limpar Cliente", command = self.limpa_cliente) # chama a funcao de limpar as entradas de dentro da barra de menu
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+Application() # invoca a classe
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
